@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -70,5 +71,27 @@ class GuestbookServiceTest {
 
         // then
         assertEquals(1L, gno);
+    }
+
+    @Test
+    @DisplayName("조회 서비스 테스트")
+    void testRead() {
+        // given
+        Long gno = 1L;
+
+        // mocking
+        Guestbook entity = Guestbook.builder().gno(gno).title("title").content("content").writer("writer").build();
+        GuestbookDTO expectedDto = service.entityToDto(entity);
+        given(repository.findById(gno)).willReturn(Optional.of(entity));
+
+        // when
+        GuestbookDTO result = service.read(gno);
+
+        // then
+        assertEquals(expectedDto.getGno(), result.getGno());
+        assertEquals(expectedDto.getTitle(), result.getTitle());
+        assertEquals(expectedDto.getContent(), result.getContent());
+        assertEquals(expectedDto.getWriter(), result.getWriter());
+
     }
 }
