@@ -32,7 +32,7 @@ class GuestbookServiceTest {
     private GuestbookRepository repository;
 
     @Test
-    @DisplayName("엔티티 객체를 DTO 객체로 변환해 반환한다.")
+    @DisplayName("목록 데이터 페이징 테스트")
     public void testList() {
         // given
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
@@ -42,7 +42,6 @@ class GuestbookServiceTest {
                 Guestbook.builder().gno(i).title("Title.." + i).content("Content.." + i).writer("Writer.." + i).build()
         ).collect(Collectors.toList());
         Page<Guestbook> page = new PageImpl(guestbooks, pageRequestDTO.getPageable(Sort.by("gno")), 300);
-
         given(repository.findAll(pageRequestDTO.getPageable(Sort.by("gno"))))
                 .willReturn(page);
 
@@ -51,6 +50,9 @@ class GuestbookServiceTest {
 
         // then
         assertIterableEquals(new PageResultDTO<>(page, service::entityToDto).getDtoList(), list.getDtoList());
+        assertFalse(list.isPrev());
+        assertTrue(list.isNext());
+        assertEquals(30, list.getTotalPage());
+        assertIterableEquals(IntStream.rangeClosed(1, 10).boxed().collect(Collectors.toList()), list.getPageList());
     }
-
 }
