@@ -20,6 +20,15 @@ public class GuestbookServiceImpl implements GuestbookService {
     private final GuestbookRepository repository;
 
     @Override
+    public Long register(GuestbookDTO dto) {
+        Guestbook entity = dtoToEntity(dto);
+
+        repository.save(entity);
+
+        return entity.getGno();
+    }
+
+    @Override
     public PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO requestDTO) {
         Pageable pageable = requestDTO.getPageable(Sort.by("gno"));
 
