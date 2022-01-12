@@ -33,7 +33,7 @@ class GuestbookServiceTest {
 
     @Test
     @DisplayName("목록 데이터 페이징 테스트")
-    public void testList() {
+    void testList() {
         // given
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
 
@@ -54,5 +54,21 @@ class GuestbookServiceTest {
         assertTrue(list.isNext());
         assertEquals(30, list.getTotalPage());
         assertIterableEquals(IntStream.rangeClosed(1, 10).boxed().collect(Collectors.toList()), list.getPageList());
+    }
+
+    @Test
+    @DisplayName("등록 서비스 테스트")
+    void testRegisterGuestbook() {
+        // given
+        GuestbookDTO dto = GuestbookDTO.builder().gno(1L).build();
+
+        // mocking
+        given(repository.save(any())).willReturn(service.dtoToEntity(dto));
+
+        // when
+        Long gno = service.register(dto);
+
+        // then
+        assertEquals(1L, gno);
     }
 }
